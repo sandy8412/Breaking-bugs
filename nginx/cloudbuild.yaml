@@ -2,11 +2,11 @@ steps:
   - name: gcr.io/cloud-builders/git
     args:
       - clone
-      - https://github.com/sandy8412/Breaking-bugs
-      - tmp
-      - --branch
-      - master
-      - --single-branch
+      - https://sandy8412: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@github.com/sandy8412/Breaking-bugs.git
+      #- tmp
+      #- --branch
+      #- master
+      #- --single-branch
   - name: gcr.io/cloud-builders/docker
     args:
       - build

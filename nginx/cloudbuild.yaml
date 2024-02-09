@@ -29,9 +29,10 @@ steps:
     args:
       - -c
       - |
-        git config --global credential.helper gcloud.sh
+        #git config --global credential.helper gcloud.sh
         git config --global user.email "santhoshgod@6002gmail.com"
         git config --global user.name "sandy8412"
+        git config --global credential.helper cache
         git add .
         git commit -m "Update nginx image tag"
         git fetch origin master

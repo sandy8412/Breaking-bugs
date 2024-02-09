@@ -38,7 +38,7 @@ steps:
       - |
         # Configure git with Cloud Build service account credentials
         git config --global credential.helper gcloud.sh
-        git config --global user.email "santhshgod@6002gmail.com"
+        git config --global user.email "santhoshgod@6002gmail.com"
         git config --global user.name "sandy8412"
 
 # Commit changes

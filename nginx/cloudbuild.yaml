@@ -32,25 +32,16 @@ steps:
 #  args: ['-i', '-e', 's|image: .*|image: us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA|g', 'nginx/manifest_files/deploy.yaml']
 
 - name: 'gcr.io/cloud-builders/git'
-  entrypoint: 'bash'
-  args:
+    entrypoint: 'bash'
+    args:
       - '-c'
       - |
-        # Configure git with Cloud Build service account credentials
         git config --global credential.helper gcloud.sh
         git config --global user.email "santhoshgod@6002gmail.com"
         git config --global user.name "sandy8412"
-
-# Commit changes
-- name: 'gcr.io/cloud-builders/git'
-  args: ['commit', '-am', 'Update nginx image tag']
-
-- name: 'gcr.io/cloud-builders/git'
-  args: ['fetch', 'origin']
-
-#- name: 'gcr.io/cloud-builders/git'
- # args: ['checkout', 'dev']
-
-# Push changes  
-- name: 'gcr.io/cloud-builders/git'
-  args: ['push', 'origin', 'master']
+        git add .
+        git commit -m "Update nginx image tag"
+        git fetch origin master
+        git checkout master
+        git rebase origin/master
+        git push origin master

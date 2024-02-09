@@ -1,0 +1,56 @@
+steps:
+
+# Checkout code
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone','https://source.developers.google.com/p/cn-project-2-413711/r/breaking-bugs', 'tmp']
+
+# Build Docker image  
+- name: 'gcr.io/cloud-builders/docker'
+  args: 
+  - 'build'
+  - '-t'
+  - 'us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA'
+  - '.'
+  dir: 'nginx'
+
+# Push Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: 
+  - 'push'
+  - 'us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA'
+
+# Update deploy manifest with new image tag
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+      - '-c'
+      - |
+        sed -i "s|image:.*|image: us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA|" nginx/manifest_files/deploy.yaml
+
+#- name: 'gcr.io/cloud-builders/sed:1.0'
+#  args: ['-i', '-e', 's|image: .*|image: us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA|g', 'nginx/manifest_files/deploy.yaml']
+
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: 'bash'
+  args:
+      - '-c'
+      - |
+        # Configure git with Cloud Build service account credentials
+        git config --global credential.helper gcloud.sh
+        git config --global user.email "goutham.e@prodapt.com"
+        git config --global user.name "Goutham E"
+
+# Commit changes
+- name: 'gcr.io/cloud-builders/git'
+  args: ['commit', '-am', 'Update nginx image tag']
+
+- name: 'gcr.io/cloud-builders/git'
+  args: ['fetch', 'origin']
+
+- name: 'gcr.io/cloud-builders/git'
+  args: ['checkout', 'dev']
+
+# Push changes  
+- name: 'gcr.io/cloud-builders/git'
+  args: ['push', 'origin', 'dev']

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+        - name: web-app
+          image: us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:123456
+          ports:
+            - containerPort: 80

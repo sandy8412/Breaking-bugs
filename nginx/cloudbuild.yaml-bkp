@@ -1,0 +1,63 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA'
+      - '.'
+    dir: 'nginx'  # Specifies the directory containing the Dockerfile
+
+  # Step 2: Push the Docker image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA'
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        sed -i "s|image:.*|image: us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA|" nginx/manifest_files/deploy.yaml
+
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Configure git with Cloud Build service account credentials
+        git config --global credential.helper gcloud.sh
+        git config --global user.email "goutham.e@prodapt.com"
+        git config --global user.name "goutham.e"
+
+        # Clone or fetch your repository
+        #git clone https://source.developers.google.com/p/cn-project-2-413711/r/breaking-bugs
+        git checkout dev
+        cp -rf /workspace/nginx/manifest_files/deploy.yaml nginx/manifest_files/deploy.yaml
+        git branch
+        git pull --rebase --autostash dev
+        git pull origin dev
+        git add --all
+        git commit -m "updating deploy.yaml file"
+        git push --set-upstream origin dev
+
+#  - name: 'gcr.io/cloud-builders/gcloud'
+#    entrypoint: 'bash'
+#    args:
+#      - '-c'
+#      - |
+#        git pull origin dev
+#        git config --global user.email "goutham.e@prodapt.com"
+#        git config --global user.name "goutham.e"
+#        git branch
+#        git checkout dev
+#        cat /workspace/nginx/manifest_files/deploy.yaml
+#        cp -rf /workspace/nginx/manifest_files/deploy.yaml nginx/manifest_files/deploy.yaml
+#        pwd
+#        cat nginx/manifest_files/deploy.yaml
+#        git remote add google https://source.developers.google.com/p/cn-project-2-413711/r/breaking-bugs
+#        git add --all
+#        git commit -m "Update image tag in deploy.yaml"
+#        git push origin dev
+        #git push origin dev

@@ -1,0 +1,38 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/nginx:$COMMIT_SHA'
+      - '.'
+    dir: 'nginx'  # Specifies the directory containing the Dockerfile
+
+  # Step 2: Push the Docker image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/nginx:$COMMIT_SHA'
+
+  # Specifies the Docker image to be pushed to Container Registry
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        sed -i "s|image:.*|image: us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/nginx:$COMMIT_SHA|" nginx/manifest_files/deploy.yaml
+		
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        git config --global credential.helper gcloud.sh
+        git config --global user.email "goutham.e@prodapt.com"
+        git config --global user.name "goutham.e"
+        #gcloud source repos clone breaking-bugs --project=cn-project-2-413711
+        #cd breaking-bugs
+        #cp nginx/manifest_files/deploy.yaml .
+        #git add deploy.yaml
+        git commit -m "Update image tag in deploy.yaml"
+        git push origin master

@@ -1,40 +1,33 @@
+---
 steps:
-
-# Checkout code
-- name: 'gcr.io/cloud-builders/git'
-  args: ['clone','https://sandy8412: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@github.com/sandy8412/Breaking-bugs', 'tmp']
-
-# Build Docker image  
-- name: 'gcr.io/cloud-builders/docker'
-  args: 
-  - 'build'
-  - '-t'
-  - 'us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA'
-  - '.'
-  dir: 'nginx'
-
-# Push Docker image
-- name: 'gcr.io/cloud-builders/docker'
-  args: 
-  - 'push'
-  - 'us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA'
-
-# Update deploy manifest with new image tag
-
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'bash'
-  args:
-      - '-c'
-      - |
-        sed -i "s|image:.*|image: us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA|" nginx/manifest_files/deploy.yaml
-
-#- name: 'gcr.io/cloud-builders/sed:1.0'
-#  args: ['-i', '-e', 's|image: .*|image: us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA|g', 'nginx/manifest_files/deploy.yaml']
-
-- name: 'gcr.io/cloud-builders/git'
-    entrypoint: 'bash'
+  - name: gcr.io/cloud-builders/git
     args:
-      - '-c'
+      - clone
+      - https://sandy8412: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@github.com/sandy8412/Breaking-bugs
+      - tmp
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA
+      - .
+    dir: nginx
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - >
+        sed -i "s|image:.*|image:
+        us-central1-docker.pkg.dev/cn-project-2-413711/breaking-bugs-registry/dev-nginx:$COMMIT_SHA|"
+        nginx/manifest_files/deploy.yaml
+  - name: gcr.io/cloud-builders/git
+    entrypoint: bash
+    args:
+      - -c
       - |
         git config --global credential.helper gcloud.sh
         git config --global user.email "santhoshgod@6002gmail.com"

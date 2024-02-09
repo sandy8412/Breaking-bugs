@@ -40,5 +40,5 @@ steps:
         git fetch origin master
         git checkout master
         #git rebase origin/master
-        git push
+        git push origin master
 ###

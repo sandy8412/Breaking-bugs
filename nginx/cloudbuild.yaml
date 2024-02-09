@@ -48,9 +48,9 @@ steps:
 - name: 'gcr.io/cloud-builders/git'
   args: ['fetch', 'origin']
 
-- name: 'gcr.io/cloud-builders/git'
-  args: ['checkout', 'dev']
+#- name: 'gcr.io/cloud-builders/git'
+ # args: ['checkout', 'dev']
 
 # Push changes  
 - name: 'gcr.io/cloud-builders/git'
-  args: ['push', 'origin', 'dev']
+  args: ['push', 'origin', 'master']

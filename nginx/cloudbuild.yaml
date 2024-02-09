@@ -2,7 +2,7 @@ steps:
 
 # Checkout code
 - name: 'gcr.io/cloud-builders/git'
-  args: ['clone','https://source.developers.google.com/p/cn-project-2-413711/r/breaking-bugs', 'tmp']
+  args: ['clone','https://sandy8412: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@github.com/sandy8412/Breaking-bugs', 'tmp']
 
 # Build Docker image  
 - name: 'gcr.io/cloud-builders/docker'
